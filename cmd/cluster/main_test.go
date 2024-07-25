@@ -2,12 +2,13 @@ package main
 
 import (
 	"context"
-	"go.uber.org/goleak"
 	"net"
 	"os"
 	"sync"
 	"testing"
 	"time"
+
+	"go.uber.org/goleak"
 )
 
 func TestMain(m *testing.M) {
@@ -48,8 +49,10 @@ func TestLeaks(t *testing.T) {
 		goleak.IgnoreTopFunction("github.com/panjf2000/ants/v2.(*Pool).purgeStaleWorkers"),
 		goleak.IgnoreTopFunction("github.com/panjf2000/ants/v2.(*Pool).ticktock"),
 		// ignore the pprof http server goroutine
-		goleak.IgnoreTopFunction("internal/poll.runtime_pollWait"))
-
+		goleak.IgnoreTopFunction("internal/poll.runtime_pollWait"),
+		// ignore the glog flush daemon goroutine
+		goleak.IgnoreTopFunction("github.com/golang/glog.(*fileSink).flushDaemon"),
+	)
 }
 
 // hasRedis does a TCP connect to port 6379 to see if there is a redis server running on localhost.
